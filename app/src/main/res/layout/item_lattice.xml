@@ -12,6 +12,6 @@
         android:textColor="#FF0000"
         android:textSize="22dp"
         android:textStyle="bold" />
-    <!--为什么我为什么用dp作为字体大小呢，因为用sp怕手机字体调大后超出格子-->
+    <!-- 使用dp防止用sp超出格子-->
 
 </LinearLayout>
