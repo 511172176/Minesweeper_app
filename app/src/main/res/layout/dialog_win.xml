@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 根布局，使用線性佈局排列子視圖 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 包含所有元件的子線性佈局 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="22dp"
+        android:layout_marginRight="22dp"
+        android:background="@drawable/dialog_bg"
+        android:orientation="vertical">
+
+        <!-- 顯示遊戲勝利文字 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:gravity="center"
+            android:text="遊戲勝利！"
+            android:textColor="#333333"
+            android:textSize="22dp" />
+
+        <!-- 顯示消耗時間或分數 -->
+        <TextView
+            android:id="@+id/consume"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:gravity="center"
+            android:text="consume"
+            android:textColor="#333333"
+            android:textSize="22dp" />
+
+        <!-- 分隔線 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="22dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="22dp"
+            android:background="#DADADA" />
+
+        <!-- 再來一局按鈕 -->
+        <TextView
+            android:id="@+id/again"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            android:text="再來一局"
+            android:textColor="#333333"
+            android:textSize="22dp" />
+
+    </LinearLayout>
+
+</LinearLayout>
