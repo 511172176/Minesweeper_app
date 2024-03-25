@@ -1,4 +1,4 @@
-package com.cyn.traps
+package edu.fju.minesweeper_app
 
 import android.annotation.SuppressLint
 import android.content.Context
