@@ -5,13 +5,13 @@
 
     <TextView
         android:id="@+id/itemText"
-        android:layout_width="27dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@mipmap/icon_lattice"
         android:gravity="center"
         android:textColor="#FF0000"
-        android:textSize="22dp"
-        android:textStyle="bold" />
-    <!-- 使用dp防止用sp超出格子-->
+        android:textStyle="bold"
+        android:textSize="22dp" />
+    <!--用dp作為字體大小防止超出格子-->
 
 </LinearLayout>

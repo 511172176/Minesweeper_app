@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 根視圖容器，使用LinearLayout作為根布局，垂直排列子視圖。 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,7 +8,6 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <!-- 標題欄LinearLayout，包含旗幟數量顯示、遊戲計時器和重置按鈕。 -->
     <LinearLayout
         android:id="@+id/titleBar"
         android:layout_width="match_parent"
@@ -19,20 +17,17 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
 
-        <!-- 旗幟數量顯示區域，包括一個圖標和數字顯示。 -->
         <LinearLayout
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <!-- 旗幟圖標 -->
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:src="@mipmap/icon_explain_flag" />
 
-            <!-- 顯示旗幟數量的TextView -->
             <TextView
                 android:id="@+id/flagNum"
                 android:layout_width="50dp"
@@ -40,9 +35,10 @@
                 android:text="--"
                 android:textColor="#333333"
                 android:textSize="16sp" />
+
         </LinearLayout>
 
-        <!-- 遊戲計時器顯示 -->
+
         <TextView
             android:id="@+id/time"
             android:layout_width="0dp"
@@ -53,14 +49,13 @@
             android:textColor="#333333"
             android:textSize="16sp" />
 
-        <!-- 重置遊戲按鈕的容器 -->
         <LinearLayout
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:gravity="right"
             android:orientation="horizontal">
 
-            <!-- 重置按鈕 -->
+
             <TextView
                 android:id="@+id/reset"
                 android:layout_width="wrap_content"
@@ -69,21 +64,23 @@
                 android:text="重置"
                 android:textColor="#333333"
                 android:textSize="16sp" />
+
         </LinearLayout>
+
     </LinearLayout>
 
-    <!-- 分割線 -->
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginBottom="8dp"
         android:background="#E3E3E3" />
 
+
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <!-- 用於展示遊戲格子 -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rc"
             android:layout_width="wrap_content"
