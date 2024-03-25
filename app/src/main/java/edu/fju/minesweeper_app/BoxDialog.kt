@@ -1,32 +1,29 @@
-package edu.fju.minesweeper_app;
+package edu.fju.minesweeper_app
 
-import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.Context;
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import android.annotation.SuppressLint
+import android.app.Dialog
+import android.content.Context
+import android.os.Bundle
+import android.view.Gravity
+import android.view.View
+import android.view.WindowManager
 
 /**
  * 引用@ https://github.com/ThirdGoddess/trap/tree/master
  */
-public class BoxDialog extends Dialog {
-
+class BoxDialog : Dialog {
     //Dialog View
-    private View view;
+    private var view: View?
 
     //Dialog彈出位置
-    private LocationView locationView = LocationView.CENTER;
+    private var locationView = LocationView.CENTER
 
     /**
      * @param context 上下文
      * @param view    Dialog View
      */
-    public BoxDialog(Context context, View view) {
-        super(context, R.style.BoxDialog);
-        this.view = view;
+    constructor(context: Context?, view: View?) : super(context!!, R.style.BoxDialog) {
+        this.view = view
     }
 
     /**
@@ -34,43 +31,36 @@ public class BoxDialog extends Dialog {
      * @param view         Dialog View
      * @param locationView Dialog彈出位置
      */
-    public BoxDialog(Context context, View view, LocationView locationView) {
-        super(context, R.style.BoxDialog);
-        this.view = view;
-        this.locationView = locationView;
+    constructor(context: Context?, view: View?, locationView: LocationView) : super(
+        context!!, R.style.BoxDialog
+    ) {
+        this.view = view
+        this.locationView = locationView
     }
 
-
     @SuppressLint("RtlHardcoded")
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    override fun onCreate(savedInstanceState: Bundle) {
+        super.onCreate(savedInstanceState)
         if (null != view) {
-            setContentView(view);
-            setCancelable(false);//點選外部是否可以關閉Dialog
-            setCanceledOnTouchOutside(false);//返回鍵是否可以關閉Dialog
-            Window window = this.getWindow();
-            assert window != null;
-            switch (locationView) {
-                case TOP:
-                    window.setGravity(Gravity.TOP);
-                    break;
-                case BOTTOM:
-                    window.setGravity(Gravity.BOTTOM);
-                    break;
-                case CENTER:
-                    window.setGravity(Gravity.CENTER);
-                    break;
+            setContentView(view!!)
+            setCancelable(false) //點選外部是否可以關閉Dialog
+            setCanceledOnTouchOutside(false) //返回鍵是否可以關閉Dialog
+            val window = this.window!!
+            when (locationView) {
+                LocationView.TOP -> window.setGravity(Gravity.TOP)
+                LocationView.BOTTOM -> window.setGravity(Gravity.BOTTOM)
+                LocationView.CENTER -> window.setGravity(Gravity.CENTER)
             }
-            WindowManager.LayoutParams params = window.getAttributes();
-            params.width = WindowManager.LayoutParams.MATCH_PARENT;
-            params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-            window.setAttributes(params);
+            val params = window.attributes
+            params.width = WindowManager.LayoutParams.MATCH_PARENT
+            params.height = WindowManager.LayoutParams.WRAP_CONTENT
+            window.setAttributes(params)
         }
     }
 
-    public enum LocationView {
-        CENTER, TOP, BOTTOM
+    enum class LocationView {
+        CENTER,
+        TOP,
+        BOTTOM
     }
 }
-

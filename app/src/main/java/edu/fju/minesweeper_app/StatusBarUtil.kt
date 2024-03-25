@@ -1,178 +1,171 @@
-package edu.fju.minesweeper_app;
+package edu.fju.minesweeper_app
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.os.Build;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
+import android.R
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.content.res.Resources
+import android.graphics.Color
+import android.os.Build
+import android.util.Log
+import android.util.TypedValue
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
+import android.view.Window
+import android.view.WindowManager
+import androidx.annotation.FloatRange
+import androidx.annotation.RequiresApi
+import java.util.regex.Pattern
 
-import androidx.annotation.FloatRange;
-import androidx.annotation.RequiresApi;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.regex.Pattern;
-
-@SuppressWarnings("unused")
-public class StatusBarUtil {
-
-    public static int DEFAULT_COLOR = 0;
-    public static float DEFAULT_ALPHA = 0;//Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? 0.2f : 0.3f;
-    public static final int MIN_API = 17;
+@Suppress("unused")
+object StatusBarUtil {
+    var DEFAULT_COLOR = 0
+    var DEFAULT_ALPHA = 0f //Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? 0.2f : 0.3f;
+    const val MIN_API = 17
 
     //沉浸式
-    public static void immersive(Activity activity) {
-        immersive(activity, DEFAULT_COLOR, DEFAULT_ALPHA);
+    @JvmOverloads
+    fun immersive(
+        activity: Activity,
+        color: Int = DEFAULT_COLOR,
+        @FloatRange(from = 0.0, to = 1.0) alpha: Float = DEFAULT_ALPHA
+    ) {
+        immersive(activity.window, color, alpha)
     }
 
-    public static void immersive(Activity activity, int color, @FloatRange(from = 0.0, to = 1.0) float alpha) {
-        immersive(activity.getWindow(), color, alpha);
+    /*fun immersive(activity: Activity, color: Int) {
+        immersive(activity.window, color, 1f)
+    }*/
+
+    fun immersive(window: Window) {
+        immersive(window, DEFAULT_COLOR, DEFAULT_ALPHA)
     }
 
-    public static void immersive(Activity activity, int color) {
-        immersive(activity.getWindow(), color, 1f);
-    }
-
-    public static void immersive(Window window) {
-        immersive(window, DEFAULT_COLOR, DEFAULT_ALPHA);
-    }
-
-    public static void immersive(Window window, int color) {
-        immersive(window, color, 1f);
+    fun immersive(window: Window, color: Int) {
+        immersive(window, color, 1f)
     }
 
     @SuppressLint("ObsoleteSdkInt")
-    public static void immersive(Window window, int color, @FloatRange(from = 0.0, to = 1.0) float alpha) {
+    fun immersive(window: Window, color: Int, @FloatRange(from = 0.0, to = 1.0) alpha: Float) {
         if (Build.VERSION.SDK_INT >= 21) {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(mixtureColor(color, alpha));
-
-            int systemUiVisibility = window.getDecorView().getSystemUiVisibility();
-            systemUiVisibility |= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-            systemUiVisibility |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-            window.getDecorView().setSystemUiVisibility(systemUiVisibility);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.statusBarColor = mixtureColor(color, alpha)
+            var systemUiVisibility = window.decorView.systemUiVisibility
+            systemUiVisibility = systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            systemUiVisibility = systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            window.decorView.systemUiVisibility = systemUiVisibility
         } else if (Build.VERSION.SDK_INT >= 19) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            setTranslucentView((ViewGroup) window.getDecorView(), color, alpha);
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            setTranslucentView(window.decorView as ViewGroup, color, alpha)
         } else if (Build.VERSION.SDK_INT >= MIN_API && Build.VERSION.SDK_INT > 16) {
-            int systemUiVisibility = window.getDecorView().getSystemUiVisibility();
-            systemUiVisibility |= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-            systemUiVisibility |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-            window.getDecorView().setSystemUiVisibility(systemUiVisibility);
+            var systemUiVisibility = window.decorView.systemUiVisibility
+            systemUiVisibility = systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            systemUiVisibility = systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            window.decorView.systemUiVisibility = systemUiVisibility
         }
     }
+
     //</editor-fold>
-
     //<editor-fold desc="DarkMode">
-    public static void darkMode(Activity activity, boolean dark) {
-        if (isFlyme4Later()) {
-            darkModeForFlyme4(activity.getWindow(), dark);
-        } else if (isMIUI6Later()) {
-            darkModeForMIUI6(activity.getWindow(), dark);
+    fun darkMode(activity: Activity, dark: Boolean) {
+        if (isFlyme4Later) {
+            darkModeForFlyme4(activity.window, dark)
+        } else if (isMIUI6Later) {
+            darkModeForMIUI6(activity.window, dark)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            darkModeForM(activity.getWindow(), dark);
+            darkModeForM(activity.window, dark)
         }
     }
 
     /**
      * 設定狀態列darkMode,字體顏色及icon變黑(目前支援MIUI6以上,Flyme4以上,Android M以上)
      */
-    public static void darkMode(Activity activity) {
-        darkMode(activity.getWindow(), DEFAULT_COLOR, DEFAULT_ALPHA);
+    fun darkMode(activity: Activity) {
+        darkMode(activity.window, DEFAULT_COLOR, DEFAULT_ALPHA)
     }
 
-    public static void darkMode(Activity activity, int color, @FloatRange(from = 0.0, to = 1.0) float alpha) {
-        darkMode(activity.getWindow(), color, alpha);
+    fun darkMode(activity: Activity, color: Int, @FloatRange(from = 0.0, to = 1.0) alpha: Float) {
+        darkMode(activity.window, color, alpha)
     }
 
     /**
      * 設定狀態列darkMode,字體顏色及icon變黑(目前支援MIUI6以上,Flyme4以上,Android M以上)
      */
-    public static void darkMode(Window window, int color, @FloatRange(from = 0.0, to = 1.0) float alpha) {
-        if (isFlyme4Later()) {
-            darkModeForFlyme4(window, true);
-            immersive(window, color, alpha);
-        } else if (isMIUI6Later()) {
-            darkModeForMIUI6(window, true);
-            immersive(window, color, alpha);
+    fun darkMode(window: Window, color: Int, @FloatRange(from = 0.0, to = 1.0) alpha: Float) {
+        if (isFlyme4Later) {
+            darkModeForFlyme4(window, true)
+            immersive(window, color, alpha)
+        } else if (isMIUI6Later) {
+            darkModeForMIUI6(window, true)
+            immersive(window, color, alpha)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            darkModeForM(window, true);
-            immersive(window, color, alpha);
+            darkModeForM(window, true)
+            immersive(window, color, alpha)
         } else if (Build.VERSION.SDK_INT >= 19) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            setTranslucentView((ViewGroup) window.getDecorView(), color, alpha);
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            setTranslucentView(window.decorView as ViewGroup, color, alpha)
         } else {
-            immersive(window, color, alpha);
+            immersive(window, color, alpha)
         }
         if (Build.VERSION.SDK_INT >= 21) {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.TRANSPARENT);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.statusBarColor = Color.TRANSPARENT
         } else {
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         }
-
-        setTranslucentView((ViewGroup) window.getDecorView(), color, alpha);
+        setTranslucentView(window.decorView as ViewGroup, color, alpha)
     }
-
     //------------------------->
-
     /**
      * android 6.0設定字體顏色
      */
     @RequiresApi(Build.VERSION_CODES.M)
-    private static void darkModeForM(Window window, boolean dark) {
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(Color.TRANSPARENT);
-
-        int systemUiVisibility = window.getDecorView().getSystemUiVisibility();
-        if (dark) {
-            systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+    private fun darkModeForM(window: Window, dark: Boolean) {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = Color.TRANSPARENT
+        var systemUiVisibility = window.decorView.systemUiVisibility
+        systemUiVisibility = if (dark) {
+            systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         } else {
-            systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
         }
-        window.getDecorView().setSystemUiVisibility(systemUiVisibility);
+        window.decorView.systemUiVisibility = systemUiVisibility
     }
 
     /**
      * 設定Flyme4+的darkMode,darkMode時候字體顏色及icon變黑
      * http://open-wiki.flyme.cn/index.php?title=Flyme%E7%B3%BB%E7%BB%9FAPI
      */
-    public static boolean darkModeForFlyme4(Window window, boolean dark) {
-        boolean result = false;
+    fun darkModeForFlyme4(window: Window?, dark: Boolean): Boolean {
+        var result = false
         if (window != null) {
             try {
-                WindowManager.LayoutParams e = window.getAttributes();
-                Field darkFlag = WindowManager.LayoutParams.class.getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON");
-                Field meizuFlags = WindowManager.LayoutParams.class.getDeclaredField("meizuFlags");
-                darkFlag.setAccessible(true);
-                meizuFlags.setAccessible(true);
-                int bit = darkFlag.getInt(null);
-                int value = meizuFlags.getInt(e);
-                if (dark) {
-                    value |= bit;
+                val e = window.attributes
+                val darkFlag =
+                    WindowManager.LayoutParams::class.java.getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON")
+                val meizuFlags =
+                    WindowManager.LayoutParams::class.java.getDeclaredField("meizuFlags")
+                darkFlag.isAccessible = true
+                meizuFlags.isAccessible = true
+                val bit = darkFlag.getInt(null)
+                var value = meizuFlags.getInt(e)
+                value = if (dark) {
+                    value or bit
                 } else {
-                    value &= ~bit;
+                    value and bit.inv()
                 }
-
-                meizuFlags.setInt(e, value);
-                window.setAttributes(e);
-                result = true;
-            } catch (Exception var8) {
-                Log.e("StatusBar", "darkIcon: failed");
+                meizuFlags.setInt(e, value)
+                window.setAttributes(e)
+                result = true
+            } catch (var8: Exception) {
+                Log.e("StatusBar", "darkIcon: failed")
             }
         }
-
-        return result;
+        return result
     }
 
     /**
@@ -180,141 +173,151 @@ public class StatusBarUtil {
      * http://dev.xiaomi.com/doc/p=4769/
      */
     @SuppressLint("PrivateApi")
-    public static boolean darkModeForMIUI6(Window window, boolean darkmode) {
-        Class<? extends Window> clazz = window.getClass();
+    fun darkModeForMIUI6(window: Window, darkmode: Boolean): Boolean {
+        val clazz: Class<out Window> = window.javaClass
         try {
-            int darkModeFlag = 0;
-            Class<?> layoutParams = Class.forName("android.view.MiuiWindowManager$LayoutParams");
-            Field field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE");
-            darkModeFlag = field.getInt(layoutParams);
-            Method extraFlagField = clazz.getMethod("setExtraFlags", int.class, int.class);
-            extraFlagField.invoke(window, darkmode ? darkModeFlag : 0, darkModeFlag);
-        } catch (Exception e) {
-            e.printStackTrace();
+            var darkModeFlag = 0
+            val layoutParams = Class.forName("android.view.MiuiWindowManager\$LayoutParams")
+            val field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE")
+            darkModeFlag = field.getInt(layoutParams)
+            val extraFlagField = clazz.getMethod(
+                "setExtraFlags",
+                Int::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType
+            )
+            extraFlagField.invoke(window, if (darkmode) darkModeFlag else 0, darkModeFlag)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            darkModeForM(window, darkmode);
+            darkModeForM(window, darkmode)
         }
-        return true;
+        return true
     }
 
-    /**
-     * 判斷是否Flyme4以上
-     */
-    public static boolean isFlyme4Later() {
-        return Build.FINGERPRINT.contains("Flyme_OS_4")
+    val isFlyme4Later: Boolean
+        /**
+         * 判斷是否Flyme4以上
+         */
+        get() = (Build.FINGERPRINT.contains("Flyme_OS_4")
                 || Build.VERSION.INCREMENTAL.contains("Flyme_OS_4")
-                || Pattern.compile("Flyme OS [4|5]", Pattern.CASE_INSENSITIVE).matcher(Build.DISPLAY).find();
-    }
+                || Pattern.compile("Flyme OS [4|5]", Pattern.CASE_INSENSITIVE)
+            .matcher(Build.DISPLAY).find())
 
-    /**
-     * 判斷是否為MIUI6以上
-     */
-    @SuppressLint("PrivateApi")
-    public static boolean isMIUI6Later() {
-        try {
-            Class<?> clz = Class.forName("android.os.SystemProperties");
-            Method mtd = clz.getMethod("get", String.class);
-            String val = (String) mtd.invoke(null, "ro.miui.ui.version.name");
-            assert val != null;
-            val = val.replaceAll("[vV]", "");
-            int version = Integer.parseInt(val);
-            return version >= 6;
-        } catch (Exception e) {
-            return false;
+    @get:SuppressLint("PrivateApi")
+    val isMIUI6Later: Boolean
+        /**
+         * 判斷是否為MIUI6以上
+         */
+        get() = try {
+            val clz = Class.forName("android.os.SystemProperties")
+            val mtd = clz.getMethod("get", String::class.java)
+            var `val` = (mtd.invoke(null, "ro.miui.ui.version.name") as String)
+            `val` = `val`.replace("[vV]".toRegex(), "")
+            val version = `val`.toInt()
+            version >= 6
+        } catch (e: Exception) {
+            false
         }
-    }
     //</editor-fold>
-
-
     /**
      * 增加View的paddingTop,增加的值為狀態列高度
      */
-    public static void setPadding(Context context, View view) {
+    fun setPadding(context: Context, view: View) {
         if (Build.VERSION.SDK_INT >= MIN_API) {
-            view.setPadding(view.getPaddingLeft(), view.getPaddingTop() + getStatusBarHeight(context),
-                    view.getPaddingRight(), view.getPaddingBottom());
+            view.setPadding(
+                view.getPaddingLeft(), view.paddingTop + getStatusBarHeight(context),
+                view.getPaddingRight(), view.paddingBottom
+            )
         }
     }
 
     /**
      * 增加View的paddingTop,增加的值為狀態列高度 (智能判斷，並設定高度)
      */
-    public static void setPaddingSmart(Context context, View view) {
+    fun setPaddingSmart(context: Context, view: View) {
         if (Build.VERSION.SDK_INT >= MIN_API) {
-            ViewGroup.LayoutParams lp = view.getLayoutParams();
+            val lp = view.layoutParams
             if (lp != null && lp.height > 0) {
-                lp.height += getStatusBarHeight(context);//增高
+                lp.height += getStatusBarHeight(context) //增高
             }
-            view.setPadding(view.getPaddingLeft(), view.getPaddingTop() + getStatusBarHeight(context),
-                    view.getPaddingRight(), view.getPaddingBottom());
+            view.setPadding(
+                view.getPaddingLeft(), view.paddingTop + getStatusBarHeight(context),
+                view.getPaddingRight(), view.paddingBottom
+            )
         }
     }
 
     /**
      * 增加View的高度以及paddingTop,增加的值為狀態列高度.一般是在沉浸式全螢幕給ToolBar用的
      */
-    public static void setHeightAndPadding(Context context, View view) {
+    fun setHeightAndPadding(context: Context, view: View) {
         if (Build.VERSION.SDK_INT >= MIN_API) {
-            ViewGroup.LayoutParams lp = view.getLayoutParams();
-            lp.height += getStatusBarHeight(context);//增高
-            view.setPadding(view.getPaddingLeft(), view.getPaddingTop() + getStatusBarHeight(context),
-                    view.getPaddingRight(), view.getPaddingBottom());
+            val lp = view.layoutParams
+            lp.height += getStatusBarHeight(context) //增高
+            view.setPadding(
+                view.getPaddingLeft(), view.paddingTop + getStatusBarHeight(context),
+                view.getPaddingRight(), view.paddingBottom
+            )
         }
     }
 
     /**
-     * 增加View上邊距（MarginTop）一般是給予高度為 WARP_CONTENT 的小控件用的
+     * 增加View上边距（MarginTop）一般是给高度为 WARP_CONTENT 的小控件用的
      */
-    public static void setMargin(Context context, View view) {
+    fun setMargin(context: Context, view: View) {
         if (Build.VERSION.SDK_INT >= MIN_API) {
-            ViewGroup.LayoutParams lp = view.getLayoutParams();
-            if (lp instanceof ViewGroup.MarginLayoutParams) {
-                ((ViewGroup.MarginLayoutParams) lp).topMargin += getStatusBarHeight(context);//增高
+            val lp = view.layoutParams
+            if (lp is MarginLayoutParams) {
+                lp.topMargin += getStatusBarHeight(context) //增高
             }
-            view.setLayoutParams(lp);
+            view.setLayoutParams(lp)
         }
     }
 
     /**
-     * 建立假的透明欄
+     * 创建假的透明栏
      */
     @SuppressLint("ObsoleteSdkInt")
-    public static void setTranslucentView(ViewGroup container, int color, @FloatRange(from = 0.0, to = 1.0) float alpha) {
+    fun setTranslucentView(
+        container: ViewGroup,
+        color: Int,
+        @FloatRange(from = 0.0, to = 1.0) alpha: Float
+    ) {
         if (Build.VERSION.SDK_INT >= 19) {
-            int mixtureColor = mixtureColor(color, alpha);
-            View translucentView = container.findViewById(android.R.id.custom);
+            val mixtureColor = mixtureColor(color, alpha)
+            var translucentView = container.findViewById<View>(R.id.custom)
             if (translucentView == null && mixtureColor != 0) {
-                translucentView = new View(container.getContext());
-                translucentView.setId(android.R.id.custom);
-                ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, getStatusBarHeight(container.getContext()));
-                container.addView(translucentView, lp);
+                translucentView = View(container.context)
+                translucentView.setId(R.id.custom)
+                val lp = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, getStatusBarHeight(container.context)
+                )
+                container.addView(translucentView, lp)
             }
-            if (translucentView != null) {
-                translucentView.setBackgroundColor(mixtureColor);
-            }
+            translucentView?.setBackgroundColor(mixtureColor)
         }
     }
 
-    public static int mixtureColor(int color, @FloatRange(from = 0.0, to = 1.0) float alpha) {
-        int a = (color & 0xff000000) == 0 ? 0xff : color >>> 24;
-        return (color & 0x00ffffff) | (((int) (a * alpha)) << 24);
+    fun mixtureColor(color: Int, @FloatRange(from = 0.0, to = 1.0) alpha: Float): Int {
+        val a = if (color and -0x1000000 == 0) 0xff else color ushr 24
+        return color and 0x00ffffff or ((a * alpha).toInt() shl 24)
     }
 
     /**
-     * 取得狀態列高度
+     * 获取状态栏高度
      */
-    public static int getStatusBarHeight(Context context) {
-        int result = 24;
-        int resId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resId > 0) {
-            result = context.getResources().getDimensionPixelSize(resId);
+    fun getStatusBarHeight(context: Context): Int {
+        var result = 24
+        val resId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+        result = if (resId > 0) {
+            context.resources.getDimensionPixelSize(resId)
         } else {
-            result = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                    result, Resources.getSystem().getDisplayMetrics());
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                result.toFloat(), Resources.getSystem().displayMetrics
+            ).toInt()
         }
-        return result;
+        return result
     }
 }
-
