@@ -5,10 +5,8 @@
 
 ## 開發環境
 - **IDE:** Android Studio
-- **操作系統:** 適用於 Android 的各個版本
 
 ## 使用語言
-- Java
 - Kotlin
 
 ## 參考引用來源
