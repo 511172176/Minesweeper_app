@@ -25,14 +25,14 @@ object MinefieldUtil {
     //建立一張二維數組代表地雷佈置
     //-1：地雷區域
     //0-8：周圍地雷數量
-    val gameMap = Array(16) { Array(30) { 0 } }
+    val gameMap = Array(16) { Array(9) { 0 } }
 
     //使用者操作圖記錄，與地圖大小相等
     //0：未開採
     //1：已開踩
     //2：標記小紅旗
     //3：問號
-    val operationMap = Array(16) { Array(30) { 0 } }
+    val operationMap = Array(16) { Array(9) { 0 } }
 
     //特殊座標，此座標不允許建立雷區
     private lateinit var specialCoordinate: MutableList<Int>
@@ -59,16 +59,16 @@ object MinefieldUtil {
         }
 
         //剩餘小紅旗數量重置
-        flagNum = 99
+        flagNum = 2
 
         val random = Random()
         val temp = mutableSetOf<Int>()
 
         //生成要埋地雷的下標
         while (true) {
-            val nextInt = random.nextInt(479)
+            val nextInt = random.nextInt(144)
 
-            dTemp * 30 + kTemp
+            dTemp * 9 + kTemp
 
 
             //如果不是使用者點擊處以及周圍1格，才會採取該座標
@@ -76,15 +76,15 @@ object MinefieldUtil {
                 temp.add(nextInt)
             }
 
-            if (99 == temp.size) {
+            if (2 == temp.size) {
                 break
             }
         }
 
         //埋下地雷
         for (i in temp) {
-            val d = i / 30
-            val k = i - 30 * d
+            val d = i / 9
+            val k = i - 9 * d
             gameMap[d][k] = -1
         }
 
@@ -114,59 +114,53 @@ object MinefieldUtil {
      * 取得陷阱數量
      */
     private fun createTrapsNumber() {
-        for (i in gameMap.indices) {
-            for (j in gameMap[i].indices) {
-                //當此時座標不是炸彈時候開始計算
-                if (-1 != gameMap[i][j]) {
+        for (i in gameMap.indices) { // 遍歷所有行
+            for (j in gameMap[i].indices) { // 遍歷所有列
+                // 當前座標不是地雷時開始計算
+                if (gameMap[i][j] != -1) {
                     var trapNum = 0
 
-                    //查詢目標點左側
-                    if (j - 1 >= 0 && -1 == gameMap[i][j - 1]) {
+                    // 檢查左侧
+                    if (j - 1 >= 0 && gameMap[i][j - 1] == -1) {
+                        trapNum++
+                    }
+                    // 檢查上方
+                    if (i - 1 >= 0 && gameMap[i - 1][j] == -1) {
+                        trapNum++
+                    }
+                    // 檢查右侧
+                    if (j + 1 < gameMap[i].size && gameMap[i][j + 1] == -1) { // 确保不超出列界限
+                        trapNum++
+                    }
+                    // 檢查下方
+                    if (i + 1 < gameMap.size && gameMap[i + 1][j] == -1) { // 确保不超出行界限
+                        trapNum++
+                    }
+                    // 檢查左上角
+                    if (i - 1 >= 0 && j - 1 >= 0 && gameMap[i - 1][j - 1] == -1) {
+                        trapNum++
+                    }
+                    // 檢查右上角
+                    if (i - 1 >= 0 && j + 1 < gameMap[i].size && gameMap[i - 1][j + 1] == -1) {
+                        trapNum++
+                    }
+                    // 檢查右下角
+                    if (i + 1 < gameMap.size && j + 1 < gameMap[i].size && gameMap[i + 1][j + 1] == -1) {
+                        trapNum++
+                    }
+                    // 檢查左下角
+                    if (i + 1 < gameMap.size && j - 1 >= 0 && gameMap[i + 1][j - 1] == -1) {
                         trapNum++
                     }
 
-                    //查詢目標上側
-                    if (i - 1 >= 0 && -1 == gameMap[i - 1][j]) {
-                        trapNum++
-                    }
-
-                    //查詢目標右側
-                    if (j + 1 <= 29 && -1 == gameMap[i][j + 1]) {
-                        trapNum++
-                    }
-
-                    //查詢目標下側
-                    if (i + 1 <= 15 && -1 == gameMap[i + 1][j]) {
-                        trapNum++
-                    }
-
-                    //查詢左上角
-                    if (j - 1 >= 0 && i - 1 >= 0 && -1 == gameMap[i - 1][j - 1]) {
-                        trapNum++
-                    }
-
-                    //查詢右上角
-                    if (j + 1 <= 29 && i - 1 >= 0 && -1 == gameMap[i - 1][j + 1]) {
-                        trapNum++
-                    }
-
-                    //查詢右下角
-                    if (j + 1 <= 29 && i + 1 <= 15 && -1 == gameMap[i + 1][j + 1]) {
-                        trapNum++
-                    }
-
-                    //查詢左下角
-                    if (j - 1 >= 0 && i + 1 <= 15 && -1 == gameMap[i + 1][j - 1]) {
-                        trapNum++
-                    }
-
-                    //賦值地雷個數
+                    // 賦值周圍地雷數量
                     gameMap[i][j] = trapNum
-
                 }
             }
         }
     }
+
+
 
     /**
      * 建立特殊座標
@@ -175,46 +169,46 @@ object MinefieldUtil {
         specialCoordinate = mutableListOf()
 
         //點擊位置
-        specialCoordinate.add(dTemp * 30 + kTemp)
+        specialCoordinate.add(dTemp * 9 + kTemp)
 
         //點擊座標左側
         if (kTemp >= 1) {
-            specialCoordinate.add(dTemp * 30 + kTemp - 1)
+            specialCoordinate.add(dTemp * 9 + kTemp - 1)
         }
 
         //點擊座標上側
         if (dTemp >= 1) {
-            specialCoordinate.add((dTemp - 1) * 30 + kTemp)
+            specialCoordinate.add((dTemp - 1) * 9 + kTemp)
         }
 
         //點擊座標右側
-        if (kTemp <= 28) {
-            specialCoordinate.add(dTemp * 30 + kTemp + 1)
+        if (kTemp <= 7) {
+            specialCoordinate.add(dTemp * 9 + kTemp + 1)
         }
 
         //點擊座標下側
         if (dTemp <= 14) {
-            specialCoordinate.add((dTemp + 1) * 30 + kTemp)
+            specialCoordinate.add((dTemp + 1) * 9 + kTemp)
         }
 
         //點擊座標的左上
         if (dTemp >= 1 && kTemp >= 1) {
-            specialCoordinate.add((dTemp - 1) * 30 + kTemp - 1)
+            specialCoordinate.add((dTemp - 1) * 9 + kTemp - 1)
         }
 
         //點擊座標的右上
-        if (dTemp >= 1 && kTemp <= 28) {
-            specialCoordinate.add((dTemp - 1) * 30 + kTemp + 1)
+        if (dTemp >= 1 && kTemp <= 7) {
+            specialCoordinate.add((dTemp - 1) * 9 + kTemp + 1)
         }
 
         //點擊座標的右下
-        if (dTemp <= 14 && kTemp <= 28) {
-            specialCoordinate.add((dTemp + 1) * 30 + kTemp + 1)
+        if (dTemp <= 14 && kTemp <= 7) {
+            specialCoordinate.add((dTemp + 1) * 9 + kTemp + 1)
         }
 
         //點擊座標的左下
         if (dTemp <= 14 && kTemp >= 1) {
-            specialCoordinate.add((dTemp + 1) * 30 + kTemp - 1)
+            specialCoordinate.add((dTemp + 1) * 9 + kTemp - 1)
         }
 
         for (i in specialCoordinate) {

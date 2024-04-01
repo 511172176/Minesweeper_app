@@ -20,7 +20,7 @@ class RcAdapter(private var context: Context) : RecyclerView.Adapter<RcAdapter.H
     }
 
     override fun getItemCount(): Int {
-        return 480
+        return 144
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -112,7 +112,7 @@ class RcAdapter(private var context: Context) : RecyclerView.Adapter<RcAdapter.H
                             dataCallBack?.gameOver()
                         } else {
 
-//                            dataCallBack?.gameWins()
+                            //dataCallBack?.gameWins()
 
                             //回調遊戲開始
                             if (!MinefieldUtil.isEstablish) {
@@ -248,7 +248,7 @@ class RcAdapter(private var context: Context) : RecyclerView.Adapter<RcAdapter.H
             }
 
             //判斷右側是否開採
-            if (k <= 28 && MinefieldUtil.gameMap[d][k + 1] >= 0 && MinefieldUtil.operationMap[d][k + 1] != 1) {
+            if (k <= 7 && MinefieldUtil.gameMap[d][k + 1] >= 0 && MinefieldUtil.operationMap[d][k + 1] != 1) {
                 MinefieldUtil.operationMap[d][k + 1] = 1
                 MinefieldUtil.turnedOnNum++
                 if (MinefieldUtil.gameMap[d][k + 1] == 0) {
@@ -275,7 +275,7 @@ class RcAdapter(private var context: Context) : RecyclerView.Adapter<RcAdapter.H
             }
 
             //判斷右上是否開採
-            if (d >= 1 && k <= 28 && MinefieldUtil.gameMap[d - 1][k + 1] >= 0 && MinefieldUtil.operationMap[d - 1][k + 1] != 1) {
+            if (d >= 1 && k <= 7 && MinefieldUtil.gameMap[d - 1][k + 1] >= 0 && MinefieldUtil.operationMap[d - 1][k + 1] != 1) {
                 MinefieldUtil.operationMap[d - 1][k + 1] = 1
                 MinefieldUtil.turnedOnNum++
                 if (MinefieldUtil.gameMap[d - 1][k + 1] == 0) {
@@ -284,7 +284,7 @@ class RcAdapter(private var context: Context) : RecyclerView.Adapter<RcAdapter.H
             }
 
             //判斷右下是否開採
-            if (d <= 14 && k <= 28 && MinefieldUtil.gameMap[d + 1][k + 1] >= 0 && MinefieldUtil.operationMap[d + 1][k + 1] != 1) {
+            if (d <= 14 && k <= 7 && MinefieldUtil.gameMap[d + 1][k + 1] >= 0 && MinefieldUtil.operationMap[d + 1][k + 1] != 1) {
                 MinefieldUtil.operationMap[d + 1][k + 1] = 1
                 MinefieldUtil.turnedOnNum++
                 if (MinefieldUtil.gameMap[d + 1][k + 1] == 0) {
@@ -303,6 +303,7 @@ class RcAdapter(private var context: Context) : RecyclerView.Adapter<RcAdapter.H
 
         }
     }
+
 
     //==============================================================================================
     //相關事件回調
