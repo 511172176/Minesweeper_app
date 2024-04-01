@@ -2,6 +2,7 @@ package edu.fju.minesweeper_app
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -130,7 +131,7 @@ class RcAdapter(private var context: Context) : RecyclerView.Adapter<RcAdapter.H
 
 
                             //判斷是否已經排除完地雷
-                            if (381 == MinefieldUtil.turnedOnNum) {
+                            if (134 == MinefieldUtil.turnedOnNum) {
                                 dataCallBack?.gameWins()
                             }
 
@@ -327,7 +328,11 @@ class RcAdapter(private var context: Context) : RecyclerView.Adapter<RcAdapter.H
         fun cancelFlag()
 
         //遊戲勝利
-        fun gameWins()
+        fun gameWins() {
+            Log.d("GameWin", "gameWins() called");
+            Log.d("GameWin", "Showing dialog now");
+        }
+
     }
 
 

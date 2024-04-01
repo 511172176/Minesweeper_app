@@ -59,7 +59,7 @@ object MinefieldUtil {
         }
 
         //剩餘小紅旗數量重置
-        flagNum = 2
+        flagNum = 10
 
         val random = Random()
         val temp = mutableSetOf<Int>()
@@ -76,7 +76,7 @@ object MinefieldUtil {
                 temp.add(nextInt)
             }
 
-            if (2 == temp.size) {
+            if (10 == temp.size) {
                 break
             }
         }

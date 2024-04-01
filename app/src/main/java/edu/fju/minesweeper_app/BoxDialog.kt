@@ -39,7 +39,7 @@ class BoxDialog : Dialog {
     }
 
     @SuppressLint("RtlHardcoded")
-    override fun onCreate(savedInstanceState: Bundle) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (null != view) {
             setContentView(view!!)
