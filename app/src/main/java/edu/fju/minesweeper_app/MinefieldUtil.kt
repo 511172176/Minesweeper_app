@@ -59,14 +59,14 @@ object MinefieldUtil {
         }
 
         //剩餘小紅旗數量重置
-        flagNum = 30
+        flagNum = 10
 
         val random = Random()
         val temp = mutableSetOf<Int>()
 
         //生成要埋地雷的下標
         while (true) {
-            val nextInt = random.nextInt(144)
+            val nextInt = random.nextInt(134)
 
             dTemp * 9 + kTemp
 
@@ -76,7 +76,7 @@ object MinefieldUtil {
                 temp.add(nextInt)
             }
 
-            if (30 == temp.size) {
+            if (10 == temp.size) {
                 break
             }
         }

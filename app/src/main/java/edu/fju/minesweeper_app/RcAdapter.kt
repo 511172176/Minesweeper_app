@@ -131,7 +131,7 @@ class RcAdapter(private var context: Context) : RecyclerView.Adapter<RcAdapter.H
 
 
                             //判斷是否已經排除完地雷
-                            if (114 == MinefieldUtil.turnedOnNum) {
+                            if (134 == MinefieldUtil.turnedOnNum) {
                                 dataCallBack?.gameWins()
                             }
 

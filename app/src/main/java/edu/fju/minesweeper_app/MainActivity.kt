@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity() {
                 val consume = inflate.findViewById<TextView>(R.id.consume)
 
                 // 顯示用時
-                consume.text = "用时：" + (if (time1 < 10) "0$time1" else time1.toString()) + ":" + if (time2 < 10) "0$time2" else time2.toString()
+                consume.text = "用時：" + (if (time1 < 10) "0$time1" else time1.toString()) + ":" + if (time2 < 10) "0$time2" else time2.toString()
 
                 // 再來一局按鈕設定
                 val again = inflate.findViewById<TextView>(R.id.again)
